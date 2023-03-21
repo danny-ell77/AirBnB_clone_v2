@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from models.amenity import Amenity
@@ -31,7 +31,7 @@ class DBStorage:
 
     def all(self, cls=None):
         if cls:
-            query = self.__session.query(cls).order_by(cls.id.asc())
+            query = self.__session.query(cls).all()
         else:
             query = self.__session.query(
                 User, State, City, Amenity, Place, Review
