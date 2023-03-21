@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from models.amenity import Amenity
