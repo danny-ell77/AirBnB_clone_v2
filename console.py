@@ -127,14 +127,13 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """Create an object of any class"""
-        print(args.split())
         kwargs = {}
         new_args = args.split()
-        class_ = new_args.pop(0)
-        if not class_:
+        model_class = HBNBCommand.classes.get(new_args.pop(0))
+        if not model_class:
             print("** class name missing **")
             return
-        elif class_ not in HBNBCommand.classes:
+        if not model_class:
             print("** class doesn't exist **")
             return
 
@@ -146,13 +145,10 @@ class HBNBCommand(cmd.Cmd):
                     value = value.strip('"').replace("_", " ")
                 kwargs[key] = value
 
-        new_instance = HBNBCommand.classes[class_](
-            id=str(uuid.uuid4()),
-            created_at=datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
-            updated_at=datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
-            **kwargs
+        now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+        new_instance = model_class(
+            id=str(uuid.uuid4()), created_at=now, updated_at=now, **kwargs
         )
-        storage.save()
         print(new_instance.id)
         storage.save()
 
