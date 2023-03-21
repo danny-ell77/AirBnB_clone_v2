@@ -4,8 +4,9 @@ import cmd
 import sys
 import uuid
 from datetime import datetime
+
+import models
 from models.base_model import BaseModel
-from models.__init__ import storage
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -149,8 +150,8 @@ class HBNBCommand(cmd.Cmd):
         new_instance = model_class(
             id=str(uuid.uuid4()), created_at=now, updated_at=now, **kwargs
         )
+        new_instance.save()
         print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """Help information for the create method"""
@@ -169,21 +170,17 @@ class HBNBCommand(cmd.Cmd):
 
         if not c_name:
             print("** class name missing **")
-            return
-
-        if c_name not in HBNBCommand.classes:
+        elif c_name not in self.classes.keys():
             print("** class doesn't exist **")
-            return
-
-        if not c_id:
+        elif not c_id:
             print("** instance id missing **")
-            return
-
-        key = c_name + "." + c_id
-        try:
-            print(storage._FileStorage__objects[key])
-        except KeyError:
-            print("** no instance found **")
+        else:
+            objs = models.storage.all()
+            obj = objs.get(f"{c_name}.{c_id}")
+            if obj:
+                print(obj)
+            else:
+                print("** no instance found **")
 
     def help_show(self):
         """Help information for the show command"""
@@ -213,8 +210,9 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del storage.all()[key]
-            storage.save()
+            instance = models.storage.all()[key]
+            models.storage.delete(instance)
+            models.storage.save()
         except KeyError:
             print("** no instance found **")
 
@@ -225,21 +223,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """Shows all objects, or all objects of a class"""
-        print_list = []
-
-        if args:
-            args = args.split(" ")[0]  # remove possible trailing args
-            if args not in HBNBCommand.classes:
+        args = args.strip().split(" ")
+        class_name = args[0]
+        if class_name:
+            if class_name in self.classes.keys():
+                objs = models.storage.all(eval(class_name))
+                print(
+                    [
+                        str(value)
+                        for key, value in objs.items()
+                        if class_name == key.split(".")[0]
+                    ]
+                )
+            else:
                 print("** class doesn't exist **")
-                return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split(".")[0] == args:
-                    print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
-
-        print(print_list)
+            print([str(obj) for obj in models.storage.all().values()])
 
     def help_all(self):
         """Help information for the all command"""
@@ -248,11 +247,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_count(self, args):
         """Count current number of class instances"""
-        count = 0
-        for k, v in storage._FileStorage__objects.items():
-            if args == k.split(".")[0]:
-                count += 1
-        print(count)
+        args = args.strip().split(" ")
+        class_name = args[0]
+        if not class_name:
+            print("** class name missing **")
+        elif class_name not in self.classes.keys():
+            print(0)
+        else:
+            objs = models.storage.all(eval(class_name))
+            count = len(
+                [
+                    str(value)
+                    for key, value in objs.items()
+                    if class_name == key.split(".")[0]
+                ]
+            )
+            print(count)
 
     def help_count(self):
         """ """
@@ -285,7 +295,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         # determine if key is present
-        if key not in storage.all():
+        if key not in models.storage.all():
             print("** no instance found **")
             return
 
@@ -319,7 +329,7 @@ class HBNBCommand(cmd.Cmd):
             args = [att_name, att_val]
 
         # retrieve dictionary of current objects
-        new_dict = storage.all()[key]
+        new_dict = models.storage.all()[key]
 
         # iterate through attr names and values
         for i, att_name in enumerate(args):
