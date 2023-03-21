@@ -176,7 +176,7 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
         else:
             objs = models.storage.all()
-            obj = objs.get(f"{c_name}.{c_id}")
+            obj = objs.get("{}.{}".format(c_name, c_id))
             if obj:
                 print(obj)
             else:

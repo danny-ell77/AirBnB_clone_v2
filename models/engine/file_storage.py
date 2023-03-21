@@ -23,7 +23,7 @@ class FileStorage:
         """Deletes an instance from storage"""
         if obj:
             attrs = obj.to_dict()
-            key = f"{attrs['__class__']}.{attrs['id']}"
+            key = "{}.{}".format(attrs["__class__"], attrs["id"])
             del FileStorage.__objects[key]
             self.save()
 
