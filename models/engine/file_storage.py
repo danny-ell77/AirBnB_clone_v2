@@ -20,6 +20,7 @@ class FileStorage:
         return FileStorage.__objects
 
     def delete(self, obj=None):
+        """Deletes an instance from storage"""
         if obj:
             attrs = obj.to_dict()
             key = f"{attrs['__class__']}.{attrs['id']}"
