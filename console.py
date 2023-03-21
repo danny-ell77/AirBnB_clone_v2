@@ -210,7 +210,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            instance = models.storage.all()[key]
+            instance = models.storage.all(eval(c_name))[key]
             models.storage.delete(instance)
             models.storage.save()
         except KeyError:
@@ -293,9 +293,9 @@ class HBNBCommand(cmd.Cmd):
 
         # generate key from class and id
         key = c_name + "." + c_id
-
+        objs = models.storage.all(eval(c_name))
         # determine if key is present
-        if key not in models.storage.all():
+        if key not in objs:
             print("** no instance found **")
             return
 
@@ -329,7 +329,7 @@ class HBNBCommand(cmd.Cmd):
             args = [att_name, att_val]
 
         # retrieve dictionary of current objects
-        new_dict = models.storage.all()[key]
+        new_dict = objs[key]
 
         # iterate through attr names and values
         for i, att_name in enumerate(args):
