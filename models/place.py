@@ -42,8 +42,12 @@ class Place(BaseModel, Base):
     longitude = Column(Float)
     city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
     user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
-    reviews = relationship("Review", cascade="all, delete", backref="place")
-    amenities = relationship("Amenity", secondary=place_amenity, viewonly=False)
+    reviews = relationship("Review", cascade='all, delete, delete-orphan',
+                           backref="place")
+
+    amenities = relationship("Amenity", secondary=place_amenity,
+                             viewonly=False,
+                             back_populates="place_amenities")
 
     @property
     def reviews(self):
