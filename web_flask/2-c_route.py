@@ -4,15 +4,15 @@ The application listens on 0.0.0.0, port 5000.
 Routes:
     /: Displays 'Hello HBNB!'.
     /hbnb: Displays 'HBNB'.
+    /c/<text>: Displays 'C' followed by the value of <text>.
 """
 from flask import Flask
-from flask import render_template
 
 app = Flask(__name__)
 
 
 @app.route("/", strict_slashes=False)
-def hello_hbnb():
+def hello():
     """Displays 'Hello HBNB!'"""
     return "Hello HBNB!"
 
@@ -23,6 +23,13 @@ def hbnb():
     return "HBNB"
 
 
+@app.route("/c/<text>")
+def display_c(text, strict_slashes=False):
+    """Displays 'C' followed by the value of <text>
+    Replaces any underscores in <text> with slashes.
+    """
+    return "C {}".format(text.replace("_", " "))
+
+
 if __name__ == "__main__":
     app.run("0.0.0.0", port=5000)
-
