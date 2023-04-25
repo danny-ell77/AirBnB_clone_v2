@@ -12,8 +12,6 @@ from models import storage
 from models.state import State
 
 app = Flask(__name__)
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
 
 
 @app.route("/states", strict_slashes=False)
@@ -30,10 +28,12 @@ def get_state(id):
     for state in states.values():
         if state.id == id:
             return render_template("9-states.html", states=state)
+    return render_template("9-states.html")
 
 
 @app.teardown_appcontext
 def close_database_connection(exception):
+    """This function closes the db session when the application context ends"""
     storage.close()
 
 

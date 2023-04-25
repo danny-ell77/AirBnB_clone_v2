@@ -12,8 +12,6 @@ from models import storage
 from models.state import State
 
 app = Flask(__name__)
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
 
 
 @app.route("/cities_by_states", strict_slashes=False)
@@ -25,6 +23,7 @@ def cities_by_states():
 
 @app.teardown_appcontext
 def close_database_connection(exception):
+    """This function closes the db session when the application context ends"""
     storage.close()
 
 
