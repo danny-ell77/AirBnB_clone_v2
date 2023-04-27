@@ -18,14 +18,15 @@
 	border-right: 1px solid #DDDDDD;
 }
 
-.filter_amenities {
+.filter_amenities  {
 	display: inline;
 	vertical-align: middle;
 	height: 100%;
 	float: left;
-    width: 25%;
+	width: 25%;
 
 	line-height: 20px;
+	border-right: 1px solid #DDDDDD;
 }
 
 .popover {

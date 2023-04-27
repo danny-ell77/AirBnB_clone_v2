@@ -25,6 +25,7 @@ def states_list():
 
 @app.teardown_appcontext
 def close_database_connection(exception):
+     """This function closes the db session when the application context ends"""
     storage.close()
 
 
